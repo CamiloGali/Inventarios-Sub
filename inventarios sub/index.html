@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Inventarios por Bodegas - ESTi</title>
+    <meta name="description" content="Sistema de gestión de inventarios multibodega, entradas y salidas de material">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563EB">
+
+    <!-- Fuentes Google: Plus Jakarta Sans y JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS v3 via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body
+    class="min-h-full flex flex-col bg-slate-50/70 text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- ========================================== -->
+    <!-- BARRA DE NAVEGACIÓN SUPERIOR / HEADER      -->
+    <!-- ========================================== -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-slate-200/80 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+
+            <!-- Logo y Título -->
+            <div class="flex items-center gap-3.5">
+                <div
+                    class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25 shrink-0">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-none">
+                            INVENTARIOS ESTI</h1>
+                        <span
+                            class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-700 tracking-wider uppercase">6
+                            Bodegas</span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-1">Control Multibodega de Insumos y Materiales</p>
+                </div>
+            </div>
+
+            <!-- Estado de Conexión y Acciones Globales -->
+            <div class="flex items-center gap-2.5">
+                <!-- Indicador de conexión -->
+                <div id="statusBadge"
+                    class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="statusText">Conectado a Sheets</span>
+                </div>
+
+                <!-- Botón de Sincronización Manual -->
+                <button id="btnSync" title="Sincronizar datos con Google Sheets"
+                    class="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-200/80 shadow-xs flex items-center gap-2 transition-all active:scale-95 cursor-pointer">
+                    <svg id="syncIcon" class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span class="hidden sm:inline">Sincronizar</span>
+                </button>
+
+                <!-- Botón de Gestión de Intendentes -->
+                <button id="btnOpenIntendentes" title="Administrar personal de intendencia autorizada"
+                    class="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-200/80 shadow-xs flex items-center gap-2 transition-all active:scale-95 cursor-pointer">
+                    <svg class="h-4 w-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span class="hidden sm:inline">Intendentes</span>
+                </button>
+
+                <!-- Botón de Configuración -->
+                <button id="btnOpenConfig" title="Configurar conexión con Google Sheets"
+                    class="h-10 w-10 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-200/80 shadow-xs flex items-center justify-center transition-all active:scale-95 cursor-pointer">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- CONTENIDO PRINCIPAL                        -->
+    <!-- ========================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- KPI STATS CARDS (TARJETAS DE MÉTRICAS) -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- Total Productos -->
+            <div
+                class="interactive-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Productos</p>
+                    <h3 id="statTotalProductos" class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">0</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium">En catálogo general</p>
+                </div>
+                <div class="h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Unidades Totales en Existencia -->
+            <div
+                class="interactive-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider" id="statStockLabel">Stock
+                        Total</p>
+                    <h3 id="statTotalStock" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-1">0</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium" id="statStockSubLabel">En las 6 bodegas</p>
+                </div>
+                <div
+                    class="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Alertas de Stock Bajo -->
+            <div
+                class="interactive-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Stock Bajo / Agotado</p>
+                    <h3 id="statStockBajo" class="text-2xl sm:text-3xl font-black text-amber-500 mt-1">0</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium">Requieren resurtido</p>
+                </div>
+                <div class="h-12 w-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Movimientos Recientes -->
+            <div
+                class="interactive-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Movimientos</p>
+                    <h3 id="statTotalMovimientos" class="text-2xl sm:text-3xl font-black text-indigo-600 mt-1">0</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium">Entradas, salidas y traspasos</p>
+                </div>
+                <div
+                    class="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SELECTOR DE LAS 6 BODEGAS                  -->
+        <!-- ========================================== -->
+        <section class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between mb-2.5">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span>Seleccionar Bodega:</span>
+                </span>
+                <span id="labelBodegaActiva"
+                    class="text-xs font-extrabold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                    🏢 Todas las Bodegas (Consolidado)
+                </span>
+            </div>
+
+            <!-- Barra con Chips Deslizables para las 6 Bodegas -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1" id="bodegasFilterContainer">
+                <button type="button" class="bodega-filter-chip active" data-bodega="ALL">
+                    <span>🏢 Todas (Global)</span>
+                </button>
+                <button type="button" class="bodega-filter-chip chip-b3" data-bodega="B3">
+                    <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                    <span>B3 - Mantenimiento</span>
+                </button>
+                <button type="button" class="bodega-filter-chip chip-b4" data-bodega="B4">
+                    <span class="h-2 w-2 rounded-full bg-indigo-500"></span>
+                    <span>B4 - Electrónica</span>
+                </button>
+                <button type="button" class="bodega-filter-chip chip-b5" data-bodega="B5">
+                    <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+                    <span>B5 - LOMA</span>
+                </button>
+                <button type="button" class="bodega-filter-chip chip-b6" data-bodega="B6">
+                    <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                    <span>B6 - Equipos de audio</span>
+                </button>
+                <button type="button" class="bodega-filter-chip chip-b7" data-bodega="B7">
+                    <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+                    <span>B7 - Pinturas y electricidad</span>
+                </button>
+                <button type="button" class="bodega-filter-chip chip-b8" data-bodega="B8">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    <span>B8 - Jardinería</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- BARRA DE ACCIONES RÁPIDAS PRINCIPALES -->
+        <section
+            class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+
+            <!-- Pestañas de Navegación del Panel -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl">
+                <button id="tabBtnInventario"
+                    class="flex-1 sm:flex-none px-4 py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2">
+                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                    <span>Catálogo de Stock</span>
+                </button>
+                <button id="tabBtnBitacora"
+                    class="flex-1 sm:flex-none px-4 py-2 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-center gap-2">
+                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Bitácora de Movimientos</span>
+                </button>
+            </div>
+
+            <!-- Botones de Operación Inmediata -->
+            <div class="flex items-center flex-wrap gap-2.5">
+                <!-- Registrar Entrada -->
+                <button id="btnOpenEntrada"
+                    class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-sm shadow-emerald-600/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                    <span>+ Registrar Entrada</span>
+                </button>
+
+                <!-- Registrar Salida -->
+                <button id="btnOpenSalida"
+                    class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-sm shadow-rose-600/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                    </svg>
+                    <span>- Registrar Salida</span>
+                </button>
+
+                <!-- Traspaso entre Bodegas -->
+                <button id="btnOpenTraspaso"
+                    class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-sm shadow-indigo-600/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span>🔄 Traspaso</span>
+                </button>
+
+                <!-- Nuevo Producto -->
+                <button id="btnOpenNuevoProd"
+                    class="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Nuevo Producto</span>
+                </button>
+
+                <!-- Exportar a CSV -->
+                <button id="btnExportCSV" title="Exportar inventario a Excel (CSV)"
+                    class="p-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center">
+                    <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 1: VISTA DE CATÁLOGO / INVENTARIO  -->
+        <!-- ========================================== -->
+        <section id="sectionInventario" class="space-y-4">
+
+            <!-- Barra de Filtros y Búsqueda -->
+            <div
+                class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+
+                <!-- Input de Búsqueda rápida -->
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="inputBuscar" placeholder="Buscar por código, descripción o categoría..."
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-slate-50/50">
+                </div>
+
+                <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+                    <!-- Filtro por Estado de Stock -->
+                    <select id="filterEstado"
+                        class="py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer">
+                        <option value="ALL">Todos los Estados</option>
+                        <option value="IN_STOCK">En Existencia (&gt; Mínimo)</option>
+                        <option value="LOW_STOCK">Stock Bajo (≤ Mínimo)</option>
+                        <option value="EMPTY">Agotados (0)</option>
+                    </select>
+
+                    <!-- Filtro por Categoría -->
+                    <select id="filterCategoria"
+                        class="py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer">
+                        <option value="ALL">Todas las Categorías</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Tabla de Productos -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-slate-100/70 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                                <th class="py-3.5 px-4 sm:px-6">Código</th>
+                                <th class="py-3.5 px-4">Descripción del Material</th>
+                                <th class="py-3.5 px-4">Categoría</th>
+                                <th class="py-3.5 px-4 text-center">Bodega</th>
+                                <th class="py-3.5 px-4 text-center" id="colHeaderStock">Stock</th>
+                                <th class="py-3.5 px-4 text-center">Mínimo</th>
+                                <th class="py-3.5 px-4 text-center">Estado</th>
+                                <th class="py-3.5 px-4 sm:px-6 text-right">Acciones Rápidas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaProductosBody"
+                            class="divide-y divide-slate-100 text-xs sm:text-sm font-medium text-slate-700">
+                            <!-- Renderizado dinámico vía app.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mensaje sin resultados -->
+                <div id="noResults" class="hidden p-12 text-center space-y-3">
+                    <div
+                        class="h-16 w-16 mx-auto rounded-full bg-slate-100 text-slate-400 flex items-center justify-center">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-base font-bold text-slate-800">No se encontraron productos</h4>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto">Prueba cambiando los términos de búsqueda o los
+                        filtros seleccionados.</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SECCIÓN 2: BITÁCORA DE MOVIMIENTOS         -->
+        <!-- ========================================== -->
+        <section id="sectionBitacora" class="hidden space-y-4">
+
+            <!-- Filtros de la Bitácora -->
+            <div
+                class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <button id="filterMovAll"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white cursor-pointer">Todos</button>
+                    <button id="filterMovEntradas"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">Solo
+                        Entradas</button>
+                    <button id="filterMovSalidas"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">Solo
+                        Salidas</button>
+                    <button id="filterMovTraspasos"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">Solo
+                        Traspasos</button>
+                </div>
+                <p class="text-xs text-slate-500 font-medium hidden sm:block">Bitácora en tiempo real sincronizada</p>
+            </div>
+
+            <!-- Tabla de Movimientos -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="bg-slate-100/70 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                                <th class="py-3.5 px-4 sm:px-6">Fecha y Hora</th>
+                                <th class="py-3.5 px-4 text-center">Tipo</th>
+                                <th class="py-3.5 px-4">Bodega</th>
+                                <th class="py-3.5 px-4">Código</th>
+                                <th class="py-3.5 px-4">Descripción</th>
+                                <th class="py-3.5 px-4 text-center">Cantidad</th>
+                                <th class="py-3.5 px-4">Responsable / Solicitante</th>
+                                <th class="py-3.5 px-4 sm:px-6">Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaMovimientosBody"
+                            class="divide-y divide-slate-100 text-xs sm:text-sm font-medium text-slate-700">
+                            <!-- Renderizado dinámico vía app.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noMovements" class="hidden p-12 text-center space-y-2">
+                    <p class="text-sm font-bold text-slate-700">No hay movimientos registrados</p>
+                    <p class="text-xs text-slate-500">Los registros de entradas, salidas y traspasos aparecerán aquí
+                        automáticamente.</p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: REGISTRAR ENTRADA DE MATERIAL     -->
+    <!-- ========================================== -->
+    <div id="modalEntrada" class="modal-backdrop">
+        <div
+            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+
+            <!-- Cabecera del Modal -->
+            <div class="p-6 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black tracking-tight">Registrar Entrada de Material</h3>
+                        <p class="text-xs text-emerald-100 font-medium">Ingreso de insumos a bodega</p>
+                    </div>
+                </div>
+                <button type="button"
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Formulario -->
+            <form id="formEntrada" class="p-6 space-y-4">
+
+                <!-- Bodega de Destino -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Bodega de
+                        Destino *</label>
+                    <select id="entradaBodegaSelect" required
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 bg-white">
+                        <option value="B3">Bodega 3 - Mantenimiento</option>
+                        <option value="B4">Bodega 4 - Electrónica</option>
+                        <option value="B5">Bodega 5 - LOMA</option>
+                        <option value="B6">Bodega 6 - Equipos de audio</option>
+                        <option value="B7">Bodega 7 - Pinturas y electricidad</option>
+                        <option value="B8">Bodega 8 - Jardinería</option>
+                    </select>
+                </div>
+
+                <!-- Seleccionar Producto -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Producto a
+                        Ingresar *</label>
+                    <select id="entradaProductoSelect" required
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 bg-white">
+                        <option value="" disabled selected>Selecciona un producto...</option>
+                    </select>
+                </div>
+
+                <!-- Vista previa de stock actual -->
+                <div id="entradaStockPreview"
+                    class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium flex items-center justify-between">
+                    <span>Stock actual en bodega seleccionada: <strong id="entradaCurrentStock"
+                            class="text-sm font-bold">0</strong> piezas</span>
+                    <span class="text-[11px] text-emerald-600 font-semibold">+ Sumará piezas</span>
+                </div>
+
+                <!-- Cantidad -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Cantidad a
+                        Ingresar (Piezas) *</label>
+                    <input type="number" id="entradaCantidad" min="1" step="1" required placeholder="Ej. 10"
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500">
+                </div>
+
+                <!-- Origen / Proveedor -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Origen o
+                        Proveedor</label>
+                    <input type="text" id="entradaOrigen"
+                        placeholder="Ej. Compra Institucional, Donación, Almacén General"
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500">
+                </div>
+
+                <!-- Observaciones -->
+                <div>
+                    <label
+                        class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Observaciones</label>
+                    <textarea id="entradaNotas" rows="2" placeholder="Detalles de factura, lote o estado..."
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 resize-none"></textarea>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <button type="button"
+                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnSubmitEntrada"
+                        class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/25 active:scale-95 flex items-center gap-2 cursor-pointer">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Confirmar Entrada</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 2: REGISTRAR SALIDA DE MATERIAL      -->
+    <!-- ========================================== -->
+    <div id="modalSalida" class="modal-backdrop">
+        <div
+            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+
+            <!-- Cabecera del Modal -->
+            <div class="p-6 bg-gradient-to-r from-rose-600 to-red-700 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black tracking-tight">Registrar Salida de Material</h3>
+                        <p class="text-xs text-rose-100 font-medium">Entrega controlada a personal de intendencia</p>
+                    </div>
+                </div>
+                <button type="button"
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Formulario -->
+            <form id="formSalida" class="p-6 space-y-4">
+
+                <!-- Bodega de Origen -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Bodega de
+                        Origen (Retiro) *</label>
+                    <select id="salidaBodegaSelect" required
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 bg-white">
+                        <option value="B3">Bodega 3 - Mantenimiento</option>
+                        <option value="B4">Bodega 4 - Electrónica</option>
+                        <option value="B5">Bodega 5 - LOMA</option>
+                        <option value="B6">Bodega 6 - Equipos de audio</option>
+                        <option value="B7">Bodega 7 - Pinturas y electricidad</option>
+                        <option value="B8">Bodega 8 - Jardinería</option>
+                    </select>
+                </div>
+
+                <!-- Seleccionar Producto -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Producto a
+                        Entregar *</label>
+                    <select id="salidaProductoSelect" required
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 bg-white">
+                        <option value="" disabled selected>Selecciona un producto...</option>
+                    </select>
+                </div>
+
+                <!-- Indicador de stock actual disponible en esa bodega -->
+                <div id="salidaStockPreview"
+                    class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 font-medium flex items-center justify-between">
+                    <span>Stock en bodega seleccionada: <strong id="salidaCurrentStock"
+                            class="text-sm font-bold">0</strong> piezas</span>
+                    <span id="salidaStockWarning" class="text-[11px] font-semibold text-rose-600"></span>
+                </div>
+
+                <!-- Cantidad -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Cantidad a
+                        Entregar *</label>
+                    <input type="number" id="salidaCantidad" min="1" step="1" required placeholder="Ej. 2"
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500">
+                </div>
+
+                <!-- Selector de Intendente (con chips rápidos y selector desplegable) -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Intendente
+                            Solicitante *</label>
+                        <button type="button" id="btnAdminIntendentesDesdeSalida"
+                            class="text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1 cursor-pointer">
+                            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            </svg>
+                            <span>+ / - Gestionar</span>
+                        </button>
+                    </div>
+
+                    <!-- Chips de los 11 intendentes para clic rápido -->
+                    <div id="intendentesChipsContainer"
+                        class="flex flex-wrap gap-1.5 mb-2.5 max-h-32 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <!-- Renderizado dinámico de chips de intendentes -->
+                    </div>
+
+                    <!-- Dropdown formal de intendente -->
+                    <select id="salidaIntendenteSelect" required
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 bg-white">
+                        <option value="" disabled selected>Selecciona un intendente...</option>
+                    </select>
+                </div>
+
+                <!-- Observaciones / Destino de uso -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Observaciones
+                        o Área de Uso</label>
+                    <input type="text" id="salidaNotas" placeholder="Ej. Laboratorio LOMA, aula 3, áreas verdes..."
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500">
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <button type="button"
+                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnSubmitSalida"
+                        class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-md shadow-rose-600/25 active:scale-95 flex items-center gap-2 cursor-pointer">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Confirmar Salida</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL TRASPASO ENTRE BODEGAS               -->
+    <!-- ========================================== -->
+    <div id="modalTraspaso" class="modal-backdrop">
+        <div
+            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+
+            <!-- Cabecera -->
+            <div
+                class="p-6 bg-gradient-to-r from-indigo-700 to-purple-800 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black tracking-tight">Traspaso entre Bodegas</h3>
+                        <p class="text-xs text-indigo-100 font-medium">Mover existencias de una bodega a otra</p>
+                    </div>
+                </div>
+                <button type="button"
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Formulario -->
+            <form id="formTraspaso" class="p-6 space-y-4">
+
+                <!-- Producto -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Producto a
+                        Traspasar *</label>
+                    <select id="traspasoProductoSelect" required
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-white">
+                        <option value="" disabled selected>Selecciona un producto...</option>
+                    </select>
+                </div>
+
+                <!-- Bodega Origen y Destino -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Bodega
+                            Origen *</label>
+                        <select id="traspasoOrigenSelect" required
+                            class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-white">
+                            <option value="B3">B3 - Mantenimiento</option>
+                            <option value="B4">B4 - Electrónica</option>
+                            <option value="B5">B5 - LOMA</option>
+                            <option value="B6">B6 - Equipos de audio</option>
+                            <option value="B7">B7 - Pinturas y elec</option>
+                            <option value="B8">B8 - Jardinería</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Bodega
+                            Destino *</label>
+                        <select id="traspasoDestinoSelect" required
+                            class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-white">
+                            <option value="B4">B4 - Electrónica</option>
+                            <option value="B3">B3 - Mantenimiento</option>
+                            <option value="B5">B5 - LOMA</option>
+                            <option value="B6">B6 - Equipos de audio</option>
+                            <option value="B7">B7 - Pinturas y elec</option>
+                            <option value="B8">B8 - Jardinería</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Preview de stock disponible en origen -->
+                <div id="traspasoStockPreview"
+                    class="hidden p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 font-medium flex items-center justify-between">
+                    <span>Stock disponible en origen: <strong id="traspasoStockAvailable"
+                            class="text-sm font-bold">0</strong> piezas</span>
+                    <span class="text-[11px] text-indigo-600 font-semibold">Se moverá a destino</span>
+                </div>
+
+                <!-- Cantidad -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Cantidad a
+                        Transferir *</label>
+                    <input type="number" id="traspasoCantidad" min="1" step="1" required placeholder="Ej. 2"
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500">
+                </div>
+
+                <!-- Responsable -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Responsable
+                        del Traspaso</label>
+                    <input type="text" id="traspasoResponsable" placeholder="Ej. Encargado de almacén / Subdirección"
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500">
+                </div>
+
+                <!-- Observaciones -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Motivo u
+                        Observaciones</label>
+                    <textarea id="traspasoNotas" rows="2" placeholder="Motivo de la reasignación entre bodegas..."
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 resize-none"></textarea>
+                </div>
+
+                <!-- Botones -->
+                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <button type="button"
+                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnSubmitTraspaso"
+                        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-md shadow-indigo-600/25 active:scale-95 flex items-center gap-2 cursor-pointer">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        <span>Confirmar Traspaso</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 3: NUEVO / EDITAR PRODUCTO           -->
+    <!-- ========================================== -->
+    <div id="modalProducto" class="modal-backdrop">
+        <div
+            class="bg-white rounded-3xl max-w-xl w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+
+            <!-- Cabecera -->
+            <div class="p-6 bg-slate-900 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 id="modalProductoTitle" class="text-lg font-black tracking-tight">Agregar Nuevo Producto
+                        </h3>
+                        <p class="text-xs text-slate-300 font-medium">Registro exclusivo en la bodega seleccionada</p>
+                    </div>
+                </div>
+                <button type="button"
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Formulario -->
+            <form id="formProducto" class="p-6 space-y-4">
+                <input type="hidden" id="prodEditMode" value="false">
+
+                <!-- Código -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Código Único
+                        *</label>
+                    <input type="text" id="prodCodigo" required placeholder="Ej. LIM-005, ELE-002, JAR-001"
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-mono font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
+                </div>
+
+                <!-- Descripción -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Descripción
+                        del Material *</label>
+                    <input type="text" id="prodDescripcion" required placeholder="Ej. Cable UTP Cat6 Bobina 305m"
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
+                </div>
+
+                <!-- Categoría -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Categoría
+                        *</label>
+                    <input type="text" id="prodCategoria" required list="categoriaDatalist"
+                        placeholder="Ej. Electrónica, Limpieza..."
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
+                    <datalist id="categoriaDatalist">
+                        <option value="Mantenimiento"></option>
+                        <option value="Electrónica"></option>
+                        <option value="LOMA"></option>
+                        <option value="Audio"></option>
+                        <option value="Pinturas"></option>
+                        <option value="Jardinería"></option>
+                        <option value="Limpieza"></option>
+                        <option value="Herramientas"></option>
+                    </datalist>
+                </div>
+
+                <!-- Bodega Exclusiva y Existencias -->
+                <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
+                            Bodega de Registro (Exclusiva) *
+                        </label>
+                        <select id="prodBodegaSelect" required
+                            class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 bg-white">
+                            <option value="B3">Bodega 3 - Mantenimiento</option>
+                            <option value="B4">Bodega 4 - Electrónica</option>
+                            <option value="B5">Bodega 5 - LOMA</option>
+                            <option value="B6">Bodega 6 - Equipos de audio</option>
+                            <option value="B7">Bodega 7 - Pinturas y electricidad</option>
+                            <option value="B8">Bodega 8 - Jardinería</option>
+                        </select>
+                        <p class="text-[11px] text-slate-500 font-medium mt-1">
+                            El producto se registrará únicamente en la bodega seleccionada y no se repetirá en las
+                            demás.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Existencia Inicial (Piezas) *
+                            </label>
+                            <input type="number" id="prodStock" min="0" step="1" required value="0"
+                                class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                Stock Mínimo (Alerta) *
+                            </label>
+                            <input type="number" id="prodStockMinimo" min="0" step="1" required value="5"
+                                class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 bg-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <button type="button"
+                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnSubmitProducto"
+                        class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center gap-2 cursor-pointer">
+                        <span>Guardar Producto</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 4: CONFIGURACIÓN GOOGLE APPS SCRIPT  -->
+    <!-- ========================================== -->
+    <div id="modalConfig" class="modal-backdrop">
+        <div
+            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+
+            <!-- Cabecera -->
+            <div class="p-6 bg-slate-900 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black tracking-tight">Configuración de Google Sheets</h3>
+                        <p class="text-xs text-slate-300 font-medium">Vinculación con Google Apps Script (6 Bodegas)</p>
+                    </div>
+                </div>
+                <button type="button"
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Formulario de Configuración -->
+            <form id="formConfig" class="p-6 space-y-4">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">URL de la
+                        Aplicación Web (Apps Script) *</label>
+                    <input type="url" id="configScriptUrl" required
+                        placeholder="https://script.google.com/macros/s/.../exec"
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs font-mono font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
+                </div>
+
+                <!-- Contenedor de resultado del test -->
+                <div id="testConfigResult" class="hidden p-3 rounded-xl text-xs font-medium border"></div>
+
+                <!-- Guía de Configuración -->
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
+                    <p class="font-bold text-slate-800">💡 Instrucciones para las 6 Bodegas:</p>
+                    <ol class="list-decimal pl-4 space-y-1 text-[11px] leading-relaxed text-slate-600">
+                        <li>Pega el código de <strong>google_apps_script.js</strong> en tu proyecto de Apps Script.</li>
+                        <li>Ejecuta la función <code>inicializarHojas</code> para formatear las 6 columnas de bodegas.
+                        </li>
+                        <li>Al implementar: elige <strong>Ejecutar como: Yo</strong> y <strong>Quién tiene acceso:
+                                Cualquier usuario</strong>.</li>
+                    </ol>
+                </div>
+
+                <!-- Botones -->
+                <div class="pt-3 flex gap-3 border-t border-slate-100">
+                    <button type="button" id="btnProbarConfig"
+                        class="w-1/2 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <span>Probar Conexión</span>
+                    </button>
+                    <button type="submit"
+                        class="w-1/2 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-md shadow-blue-500/25 cursor-pointer flex items-center justify-center gap-1.5">
+                        <span>Guardar y Sincronizar</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 5: GESTIÓN DE PERSONAL DE INTENDENCIA-->
+    <!-- ========================================== -->
+    <div id="modalIntendentes" class="modal-backdrop">
+        <div
+            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+
+            <!-- Cabecera -->
+            <div class="p-6 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black tracking-tight">Personal de Intendencia</h3>
+                        <p class="text-xs text-slate-300 font-medium">Agregar o dar de baja personal autorizado</p>
+                    </div>
+                </div>
+                <button type="button"
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Cuerpo del modal -->
+            <div class="p-6 space-y-5">
+
+                <!-- Formulario para Agregar Intendente -->
+                <form id="formAgregarIntendente" class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        Nuevo Intendente *
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text" id="inputNuevoIntendente" required
+                            placeholder="Nombre del intendente (Ej. Juan Pérez)"
+                            class="flex-1 py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500">
+                        <button type="submit"
+                            class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-md shadow-rose-600/20 active:scale-95 cursor-pointer whitespace-nowrap flex items-center gap-1.5">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>+ Agregar</span>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-400 font-medium">Se sincronizará automáticamente con las opciones
+                        de salida de material.</p>
+                </form>
+
+                <!-- Lista de Intendentes Registrados -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Personal Autorizado
+                            Actual:</span>
+                        <span class="text-xs font-extrabold text-slate-500"><span id="contadorIntendentes">0</span>
+                            personas</span>
+                    </div>
+
+                    <div id="listaIntendentesAdmin" class="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+                        <!-- Renderizado dinámico vía app.js -->
+                    </div>
+                </div>
+
+                <!-- Botón de Cerrar -->
+                <div class="pt-3 border-t border-slate-100 flex justify-end">
+                    <button type="button"
+                        class="btnCerrarModal px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all cursor-pointer">
+                        Listo / Cerrar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 6: CONFIRMACIÓN DE ELIMINACIÓN       -->
+    <!-- ========================================== -->
+    <div id="modalEliminar" class="modal-backdrop">
+        <div
+            class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-slate-200/80 p-6 text-center space-y-4 modal-content-animated">
+            <div class="h-14 w-14 mx-auto rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </div>
+            <div>
+                <h4 class="text-base font-black text-slate-900">¿Eliminar producto?</h4>
+                <p id="deleteProductText" class="text-xs text-slate-500 mt-1">Esta acción retirará el artículo del
+                    catálogo.</p>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button type="button"
+                    class="btnCerrarModal w-1/2 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                    Cancelar
+                </button>
+                <button type="button" id="btnConfirmarEliminar"
+                    class="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all cursor-pointer shadow-md shadow-rose-600/20">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR FLOTANTE DE NOTIFICACIONES (TOASTS) -->
+    <div id="toastContainer"></div>
+
+    <!-- SCRIPT DE LA APLICACIÓN -->
+    <script src="app.js"></script>
+</body>
+
+</html>
