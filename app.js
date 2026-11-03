@@ -308,12 +308,13 @@ function actualizarBadgeConexion(online, texto) {
   if (!badge || !textElem) return;
 
   textElem.textContent = texto;
+  badge.title = texto;
   if (online) {
-    badge.className = "hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200";
-    badge.firstElementChild.className = "h-2 w-2 rounded-full bg-emerald-500 animate-pulse";
+    badge.className = "flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200";
+    badge.firstElementChild.className = "h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0";
   } else {
-    badge.className = "hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200";
-    badge.firstElementChild.className = "h-2 w-2 rounded-full bg-amber-500";
+    badge.className = "flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200";
+    badge.firstElementChild.className = "h-2 w-2 rounded-full bg-amber-500 shrink-0";
   }
 }
 
@@ -809,41 +810,41 @@ function renderizarTablaProductos() {
     const bodegaBadge = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold ${bAsignada.badgeClass}">${bAsignada.corto}</span>`;
 
     tr.innerHTML = `
-      <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap min-w-[130px]">
+      <td data-label="Código" class="py-3.5 px-4 sm:px-6 whitespace-nowrap min-w-[130px]">
         <span class="badge-codigo-producto" title="Código: ${escapeHtml(prod.codigo)}">
           ${escapeHtml(prod.codigo)}
         </span>
       </td>
-      <td class="py-3.5 px-4">
+      <td data-label="Descripción" class="py-3.5 px-4">
         <div class="font-bold text-slate-900">${escapeHtml(prod.descripcion)}</div>
       </td>
-      <td class="py-3.5 px-4">
+      <td data-label="Categoría" class="py-3.5 px-4">
         <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600">
           ${escapeHtml(prod.categoria)}
         </span>
       </td>
-      <td class="py-3.5 px-4 text-center">
+      <td data-label="Bodega" class="py-3.5 px-4 text-center">
         ${bodegaBadge}
       </td>
-      <td class="py-3.5 px-4 text-center">
-        <div class="flex flex-col items-center">
+      <td data-label="Stock" class="py-3.5 px-4 text-center">
+        <div class="flex flex-col items-end sm:items-center">
           <span class="text-base font-black ${stockActual === 0 ? 'text-rose-600' : (stockActual <= prod.stockMinimo ? 'text-amber-600' : 'text-slate-900')}">
             ${stockActual}
           </span>
           ${desgloseHtml}
         </div>
       </td>
-      <td class="py-3.5 px-4 text-center">
+      <td data-label="Mínimo" class="py-3.5 px-4 text-center">
         <span class="text-xs font-bold text-slate-500">${prod.stockMinimo}</span>
       </td>
-      <td class="py-3.5 px-4 text-center">
+      <td data-label="Estado" class="py-3.5 px-4 text-center">
         ${badgeHtml}
       </td>
-      <td class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
-        <div class="flex items-center justify-end gap-1.5">
+      <td data-label="Acciones" class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
+        <div class="flex items-center justify-end gap-1.5 flex-wrap">
           <!-- Entrada -->
           <button onclick="abrirEntradaConProducto('${escapeHtml(prod.codigo)}')" title="Registrar Entrada"
-            class="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 cursor-pointer active:scale-95 transition-all">
+            class="p-2 sm:p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 cursor-pointer active:scale-95 transition-all">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -851,7 +852,7 @@ function renderizarTablaProductos() {
 
           <!-- Salida -->
           <button onclick="abrirSalidaConProducto('${escapeHtml(prod.codigo)}')" title="Registrar Salida"
-            class="p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 cursor-pointer active:scale-95 transition-all">
+            class="p-2 sm:p-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 cursor-pointer active:scale-95 transition-all">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
             </svg>
@@ -859,7 +860,7 @@ function renderizarTablaProductos() {
 
           <!-- Traspaso -->
           <button onclick="abrirTraspasoConProducto('${escapeHtml(prod.codigo)}')" title="Traspasar entre bodegas"
-            class="p-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 cursor-pointer active:scale-95 transition-all">
+            class="p-2 sm:p-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 cursor-pointer active:scale-95 transition-all">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
             </svg>
@@ -867,7 +868,7 @@ function renderizarTablaProductos() {
 
           <!-- Editar -->
           <button onclick="abrirEditarProducto('${escapeHtml(prod.codigo)}')" title="Editar Producto"
-            class="p-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 cursor-pointer active:scale-95 transition-all">
+            class="p-2 sm:p-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 cursor-pointer active:scale-95 transition-all">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
@@ -875,7 +876,7 @@ function renderizarTablaProductos() {
 
           <!-- Eliminar -->
           <button onclick="abrirModalEliminar('${escapeHtml(prod.codigo)}')" title="Eliminar Producto"
-            class="p-1.5 rounded-lg bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 cursor-pointer active:scale-95 transition-all">
+            class="p-2 sm:p-1.5 rounded-lg bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 cursor-pointer active:scale-95 transition-all">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
@@ -934,35 +935,35 @@ function renderizarTablaMovimientos() {
     }
 
     tr.innerHTML = `
-      <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+      <td data-label="Fecha y Hora" class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
         <div class="font-bold text-slate-800 text-xs">${escapeHtml(mov.fecha || '')}</div>
         <div class="text-[11px] text-slate-400 font-mono">${escapeHtml(mov.hora || '')}</div>
       </td>
-      <td class="py-3.5 px-4 text-center whitespace-nowrap">
+      <td data-label="Tipo" class="py-3.5 px-4 text-center whitespace-nowrap">
         ${tipoBadge}
       </td>
-      <td class="py-3.5 px-4 whitespace-nowrap">
+      <td data-label="Bodega" class="py-3.5 px-4 whitespace-nowrap">
         <span class="inline-block px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
           ${escapeHtml(mov.bodega || 'B3')}
         </span>
       </td>
-      <td class="py-3.5 px-4 whitespace-nowrap min-w-[130px]">
+      <td data-label="Código" class="py-3.5 px-4 whitespace-nowrap min-w-[130px]">
         <span class="badge-codigo-producto" title="Código: ${escapeHtml(mov.codigo)}">
           ${escapeHtml(mov.codigo)}
         </span>
       </td>
-      <td class="py-3.5 px-4 font-semibold text-slate-900">
+      <td data-label="Descripción" class="py-3.5 px-4 font-semibold text-slate-900">
         ${escapeHtml(mov.descripcion || '')}
       </td>
-      <td class="py-3.5 px-4 text-center whitespace-nowrap">
+      <td data-label="Cantidad" class="py-3.5 px-4 text-center whitespace-nowrap">
         <span class="text-sm ${cantidadClass}">
           ${cantidadSign}${mov.cantidad}
         </span>
       </td>
-      <td class="py-3.5 px-4 font-medium text-slate-800">
+      <td data-label="Responsable" class="py-3.5 px-4 font-medium text-slate-800">
         ${escapeHtml(mov.responsable || 'General')}
       </td>
-      <td class="py-3.5 px-4 sm:px-6 text-slate-500 text-xs">
+      <td data-label="Observaciones" class="py-3.5 px-4 sm:px-6 text-slate-500 text-xs">
         ${escapeHtml(mov.observaciones || '—')}
       </td>
     `;
@@ -1122,19 +1123,31 @@ async function procesarAgregarIntendente(e) {
   renderizarListaAdminIntendentes();
 
   input.value = '';
-  mostrarToast(`Intendente "${nombre}" agregado con éxito.`, "success");
+  mostrarToast(`Intendente "${nombre}" agregado. Sincronizando con Google Sheets...`, "info");
 
   // Sincronizar en Google Sheets
-  enviarPeticionAppsScript({
+  const res = await enviarPeticionAppsScript({
     action: "agregarIntendente",
     nombre: nombre
   });
+
+  if (res && res.success) {
+    if (Array.isArray(res.intendentes)) {
+      listaIntendentes = res.intendentes;
+      guardarIntendentesEnLocalStorage();
+      renderizarIntendentes();
+      renderizarListaAdminIntendentes();
+    }
+    mostrarToast(`"${nombre}" guardado y sincronizado en Google Sheets.`, "success");
+  } else if (res && !res.success) {
+    mostrarToast(`⚠️ Aviso: Google Sheets rechazó el registro (${res.error || 'Revisa Apps Script'}). Asegúrate de crear una Nueva Versión en Implementar.`, "warning", 7000);
+  }
 }
 
 /**
  * Elimina un intendente de la lista
  */
-window.eliminarIntendente = function (nombre) {
+window.eliminarIntendente = async function (nombre) {
   if (!nombre) return;
 
   const confirma = confirm(`¿Estás seguro de que deseas eliminar a "${nombre}" de la lista de intendentes autorizados?`);
@@ -1146,13 +1159,25 @@ window.eliminarIntendente = function (nombre) {
   renderizarIntendentes();
   renderizarListaAdminIntendentes();
 
-  mostrarToast(`Intendente "${nombre}" eliminado del sistema.`, "info");
+  mostrarToast(`Eliminando a "${nombre}"...`, "info");
 
   // Sincronizar en Google Sheets
-  enviarPeticionAppsScript({
+  const res = await enviarPeticionAppsScript({
     action: "eliminarIntendente",
     nombre: nombre
   });
+
+  if (res && res.success) {
+    if (Array.isArray(res.intendentes)) {
+      listaIntendentes = res.intendentes;
+      guardarIntendentesEnLocalStorage();
+      renderizarIntendentes();
+      renderizarListaAdminIntendentes();
+    }
+    mostrarToast(`"${nombre}" eliminado de Google Sheets con éxito.`, "info");
+  } else if (res && !res.success) {
+    mostrarToast(`⚠️ Aviso: No se pudo eliminar de Google Sheets (${res.error || 'Error de conexión'}).`, "warning", 7000);
+  }
 };
 
 // ========================================================
@@ -1319,10 +1344,10 @@ function configurarEventListeners() {
       if (labelElem) {
         if (bId === 'ALL') {
           labelElem.textContent = "🏢 Todas las Bodegas (Consolidado)";
-          labelElem.className = "text-xs font-extrabold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200";
+          labelElem.className = "text-[11px] sm:text-xs font-extrabold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 self-start sm:self-auto truncate max-w-full";
         } else {
           labelElem.textContent = `📍 ${BODEGAS[bId].nombre}`;
-          labelElem.className = `text-xs font-extrabold text-white bg-slate-900 px-3 py-1 rounded-full`;
+          labelElem.className = `text-[11px] sm:text-xs font-extrabold text-white bg-slate-900 px-3 py-1 rounded-full self-start sm:self-auto truncate max-w-full`;
         }
       }
 
@@ -1462,13 +1487,13 @@ function cambiarTab(tab) {
   if (tab === 'inventario') {
     secInv.classList.remove('hidden');
     secBit.classList.add('hidden');
-    btnInv.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2";
-    btnBit.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-center gap-2";
+    btnInv.className = "flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2";
+    btnBit.className = "flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2";
   } else {
     secInv.classList.add('hidden');
     secBit.classList.remove('hidden');
-    btnBit.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2";
-    btnInv.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-center gap-2";
+    btnBit.className = "flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2";
+    btnInv.className = "flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2";
     renderizarTablaMovimientos();
   }
 }
@@ -1480,8 +1505,8 @@ function setFiltroMov(tipo) {
   const btnSal = document.getElementById('filterMovSalidas');
   const btnTra = document.getElementById('filterMovTraspasos');
 
-  const activeClass = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white cursor-pointer";
-  const inactiveClass = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer";
+  const activeClass = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white cursor-pointer whitespace-nowrap";
+  const inactiveClass = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer whitespace-nowrap";
 
   btnAll.className = tipo === 'ALL' ? activeClass : inactiveClass;
   btnEnt.className = tipo === 'ENTRADA' ? activeClass : inactiveClass;

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Bodegas Sub - ESTi</title>
+    <title>Control de Inventarios por Bodegas - ESTi</title>
     <meta name="description" content="Sistema de gestión de inventarios multibodega, entradas y salidas de material">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563EB">
@@ -50,42 +50,42 @@
     <!-- BARRA DE NAVEGACIÓN SUPERIOR / HEADER      -->
     <!-- ========================================== -->
     <header class="sticky top-0 z-40 glass-nav border-b border-slate-200/80 shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-4">
 
             <!-- Logo y Título -->
-            <div class="flex items-center gap-3.5">
+            <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
                 <div
-                    class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25 shrink-0">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25 shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-none">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                        <h1 class="text-sm sm:text-lg font-black text-slate-900 tracking-tight leading-none truncate">
                             INVENTARIOS ESTI</h1>
                         <span
-                            class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-700 tracking-wider uppercase">6
+                            class="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-blue-100 text-blue-700 tracking-wider uppercase shrink-0">6
                             Bodegas</span>
                     </div>
-                    <p class="text-xs text-slate-500 font-medium mt-1">Control Multibodega de Insumos y Materiales</p>
+                    <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5 sm:mt-1 truncate">Control Multibodega de Insumos y Materiales</p>
                 </div>
             </div>
 
             <!-- Estado de Conexión y Acciones Globales -->
-            <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                 <!-- Indicador de conexión -->
                 <div id="statusBadge"
-                    class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="statusText">Conectado a Sheets</span>
+                    class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                    <span id="statusText" class="hidden md:inline">Conectado a Sheets</span>
                 </div>
 
                 <!-- Botón de Sincronización Manual -->
                 <button id="btnSync" title="Sincronizar datos con Google Sheets"
-                    class="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-200/80 shadow-xs flex items-center gap-2 transition-all active:scale-95 cursor-pointer">
-                    <svg id="syncIcon" class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24"
+                    class="h-9 sm:h-10 px-2.5 sm:px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-200/80 shadow-xs flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer">
+                    <svg id="syncIcon" class="h-4 w-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -95,8 +95,8 @@
 
                 <!-- Botón de Gestión de Intendentes -->
                 <button id="btnOpenIntendentes" title="Administrar personal de intendencia autorizada"
-                    class="h-10 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-200/80 shadow-xs flex items-center gap-2 transition-all active:scale-95 cursor-pointer">
-                    <svg class="h-4 w-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="h-9 sm:h-10 px-2.5 sm:px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-200/80 shadow-xs flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer">
+                    <svg class="h-4 w-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -105,7 +105,7 @@
 
                 <!-- Botón de Configuración -->
                 <button id="btnOpenConfig" title="Configurar conexión con Google Sheets"
-                    class="h-10 w-10 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-200/80 shadow-xs flex items-center justify-center transition-all active:scale-95 cursor-pointer">
+                    class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-200/80 shadow-xs flex items-center justify-center transition-all active:scale-95 cursor-pointer shrink-0">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -121,21 +121,21 @@
     <!-- ========================================== -->
     <!-- CONTENIDO PRINCIPAL                        -->
     <!-- ========================================== -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
         <!-- KPI STATS CARDS (TARJETAS DE MÉTRICAS) -->
-        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
 
             <!-- Total Productos -->
             <div
-                class="interactive-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Productos</p>
-                    <h3 id="statTotalProductos" class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">0</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium">En catálogo general</p>
+                class="interactive-card bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">Productos</p>
+                    <h3 id="statTotalProductos" class="text-xl sm:text-3xl font-black text-slate-900 mt-0.5 sm:mt-1">0</h3>
+                    <p class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 font-medium truncate">En catálogo general</p>
                 </div>
-                <div class="h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                     </svg>
@@ -144,16 +144,16 @@
 
             <!-- Unidades Totales en Existencia -->
             <div
-                class="interactive-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider" id="statStockLabel">Stock
+                class="interactive-card bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate" id="statStockLabel">Stock
                         Total</p>
-                    <h3 id="statTotalStock" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-1">0</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium" id="statStockSubLabel">En las 6 bodegas</p>
+                    <h3 id="statTotalStock" class="text-xl sm:text-3xl font-black text-emerald-600 mt-0.5 sm:mt-1">0</h3>
+                    <p class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 font-medium truncate" id="statStockSubLabel">En las 6 bodegas</p>
                 </div>
                 <div
-                    class="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                     </svg>
@@ -162,14 +162,14 @@
 
             <!-- Alertas de Stock Bajo -->
             <div
-                class="interactive-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Stock Bajo / Agotado</p>
-                    <h3 id="statStockBajo" class="text-2xl sm:text-3xl font-black text-amber-500 mt-1">0</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium">Requieren resurtido</p>
+                class="interactive-card bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">Stock Bajo / Agotado</p>
+                    <h3 id="statStockBajo" class="text-xl sm:text-3xl font-black text-amber-500 mt-0.5 sm:mt-1">0</h3>
+                    <p class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 font-medium truncate">Requieren resurtido</p>
                 </div>
-                <div class="h-12 w-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
@@ -178,15 +178,15 @@
 
             <!-- Movimientos Recientes -->
             <div
-                class="interactive-card bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Movimientos</p>
-                    <h3 id="statTotalMovimientos" class="text-2xl sm:text-3xl font-black text-indigo-600 mt-1">0</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5 font-medium">Entradas, salidas y traspasos</p>
+                class="interactive-card bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                    <p class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">Movimientos</p>
+                    <h3 id="statTotalMovimientos" class="text-xl sm:text-3xl font-black text-indigo-600 mt-0.5 sm:mt-1">0</h3>
+                    <p class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 font-medium truncate">Entradas, salidas y traspasos</p>
                 </div>
                 <div
-                    class="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                     </svg>
@@ -199,22 +199,22 @@
         <!-- SELECTOR DE LAS 6 BODEGAS                  -->
         <!-- ========================================== -->
         <section class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-            <div class="flex items-center justify-between mb-2.5">
+            <div class="flex flex-col xs:flex-row sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-2.5">
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="h-4 w-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                     <span>Seleccionar Bodega:</span>
                 </span>
                 <span id="labelBodegaActiva"
-                    class="text-xs font-extrabold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                    class="text-[11px] sm:text-xs font-extrabold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 self-start sm:self-auto truncate max-w-full">
                     🏢 Todas las Bodegas (Consolidado)
                 </span>
             </div>
 
             <!-- Barra con Chips Deslizables para las 6 Bodegas -->
-            <div class="flex items-center gap-2 overflow-x-auto pb-1" id="bodegasFilterContainer">
+            <div class="flex items-center gap-2 overflow-x-auto pb-1.5 scroll-smooth" id="bodegasFilterContainer">
                 <button type="button" class="bodega-filter-chip active" data-bodega="ALL">
                     <span>🏢 Todas (Global)</span>
                 </button>
@@ -247,76 +247,77 @@
 
         <!-- BARRA DE ACCIONES RÁPIDAS PRINCIPALES -->
         <section
-            class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+            class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
 
             <!-- Pestañas de Navegación del Panel -->
             <div class="flex items-center bg-slate-100 p-1 rounded-xl">
                 <button id="tabBtnInventario"
-                    class="flex-1 sm:flex-none px-4 py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2">
-                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2">
+                    <svg class="h-4 w-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 6h16M4 10h16M4 14h16M4 18h16" />
                     </svg>
-                    <span>Catálogo de Stock</span>
+                    <span class="truncate">Catálogo de Stock</span>
                 </button>
                 <button id="tabBtnBitacora"
-                    class="flex-1 sm:flex-none px-4 py-2 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-center gap-2">
-                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2">
+                    <svg class="h-4 w-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span>Bitácora de Movimientos</span>
+                    <span class="truncate">Bitácora de Movimientos</span>
                 </button>
             </div>
 
             <!-- Botones de Operación Inmediata -->
-            <div class="flex items-center flex-wrap gap-2.5">
+            <div class="grid grid-cols-2 sm:flex sm:items-center sm:flex-wrap gap-2 sm:gap-2.5">
                 <!-- Registrar Entrada -->
                 <button id="btnOpenEntrada"
-                    class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-sm shadow-emerald-600/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="px-3 sm:px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-sm shadow-emerald-600/20 active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
+                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                     </svg>
-                    <span>+ Registrar Entrada</span>
+                    <span class="truncate">+ Entrada</span>
                 </button>
 
                 <!-- Registrar Salida -->
                 <button id="btnOpenSalida"
-                    class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-sm shadow-rose-600/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="px-3 sm:px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-sm shadow-rose-600/20 active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
+                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5 10l7-7m0 0l7 7m-7-7v18" />
                     </svg>
-                    <span>- Registrar Salida</span>
+                    <span class="truncate">- Salida</span>
                 </button>
 
                 <!-- Traspaso entre Bodegas -->
                 <button id="btnOpenTraspaso"
-                    class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-sm shadow-indigo-600/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="px-3 sm:px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-sm shadow-indigo-600/20 active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
+                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                     </svg>
-                    <span>🔄 Traspaso</span>
+                    <span class="truncate">🔄 Traspaso</span>
                 </button>
 
                 <!-- Nuevo Producto -->
                 <button id="btnOpenNuevoProd"
-                    class="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="px-3 sm:px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    <span>Nuevo Producto</span>
+                    <span class="truncate">Nuevo Producto</span>
                 </button>
 
                 <!-- Exportar a CSV -->
                 <button id="btnExportCSV" title="Exportar inventario a Excel (CSV)"
-                    class="p-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center">
-                    <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="col-span-2 sm:col-span-1 py-2.5 px-3 sm:p-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2 text-xs font-bold">
+                    <svg class="h-4 w-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
+                    <span class="sm:hidden">Exportar a Excel (CSV)</span>
                 </button>
             </div>
 
@@ -329,7 +330,7 @@
 
             <!-- Barra de Filtros y Búsqueda -->
             <div
-                class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 sm:gap-3">
 
                 <!-- Input de Búsqueda rápida -->
                 <div class="relative flex-1">
@@ -343,10 +344,10 @@
                         class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-slate-50/50">
                 </div>
 
-                <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+                <div class="grid grid-cols-1 xs:grid-cols-2 sm:flex items-center gap-2 sm:gap-2.5">
                     <!-- Filtro por Estado de Stock -->
                     <select id="filterEstado"
-                        class="py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer">
+                        class="w-full sm:w-auto py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer">
                         <option value="ALL">Todos los Estados</option>
                         <option value="IN_STOCK">En Existencia (&gt; Mínimo)</option>
                         <option value="LOW_STOCK">Stock Bajo (≤ Mínimo)</option>
@@ -355,7 +356,7 @@
 
                     <!-- Filtro por Categoría -->
                     <select id="filterCategoria"
-                        class="py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer">
+                        class="w-full sm:w-auto py-2.5 px-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer">
                         <option value="ALL">Todas las Categorías</option>
                     </select>
                 </div>
@@ -365,7 +366,7 @@
             <!-- Tabla de Productos -->
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left border-collapse responsive-table">
                         <thead>
                             <tr
                                 class="bg-slate-100/70 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
@@ -387,15 +388,15 @@
                 </div>
 
                 <!-- Mensaje sin resultados -->
-                <div id="noResults" class="hidden p-12 text-center space-y-3">
+                <div id="noResults" class="hidden p-8 sm:p-12 text-center space-y-3">
                     <div
-                        class="h-16 w-16 mx-auto rounded-full bg-slate-100 text-slate-400 flex items-center justify-center">
-                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="h-14 w-14 sm:h-16 sm:w-16 mx-auto rounded-full bg-slate-100 text-slate-400 flex items-center justify-center">
+                        <svg class="h-7 w-7 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
-                    <h4 class="text-base font-bold text-slate-800">No se encontraron productos</h4>
+                    <h4 class="text-sm sm:text-base font-bold text-slate-800">No se encontraron productos</h4>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto">Prueba cambiando los términos de búsqueda o los
                         filtros seleccionados.</p>
                 </div>
@@ -410,18 +411,18 @@
 
             <!-- Filtros de la Bitácora -->
             <div
-                class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2">
+                class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+                <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
                     <button id="filterMovAll"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white cursor-pointer">Todos</button>
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white cursor-pointer whitespace-nowrap">Todos</button>
                     <button id="filterMovEntradas"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">Solo
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer whitespace-nowrap">Solo
                         Entradas</button>
                     <button id="filterMovSalidas"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">Solo
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer whitespace-nowrap">Solo
                         Salidas</button>
                     <button id="filterMovTraspasos"
-                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">Solo
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer whitespace-nowrap">Solo
                         Traspasos</button>
                 </div>
                 <p class="text-xs text-slate-500 font-medium hidden sm:block">Bitácora en tiempo real sincronizada</p>
@@ -430,7 +431,7 @@
             <!-- Tabla de Movimientos -->
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left border-collapse responsive-table">
                         <thead>
                             <tr
                                 class="bg-slate-100/70 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
@@ -451,7 +452,7 @@
                     </table>
                 </div>
 
-                <div id="noMovements" class="hidden p-12 text-center space-y-2">
+                <div id="noMovements" class="hidden p-8 sm:p-12 text-center space-y-2">
                     <p class="text-sm font-bold text-slate-700">No hay movimientos registrados</p>
                     <p class="text-xs text-slate-500">Los registros de entradas, salidas y traspasos aparecerán aquí
                         automáticamente.</p>
@@ -467,25 +468,25 @@
     <!-- ========================================== -->
     <div id="modalEntrada" class="modal-backdrop">
         <div
-            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+            class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full max-h-[90dvh] flex flex-col shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
 
             <!-- Cabecera del Modal -->
-            <div class="p-6 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex items-center justify-between">
-                <div class="flex items-center gap-3">
+            <div class="p-4 sm:p-6 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
                     <div
-                        class="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-black tracking-tight">Registrar Entrada de Material</h3>
-                        <p class="text-xs text-emerald-100 font-medium">Ingreso de insumos a bodega</p>
+                    <div class="min-w-0">
+                        <h3 class="text-base sm:text-lg font-black tracking-tight truncate">Registrar Entrada de Material</h3>
+                        <p class="text-[11px] sm:text-xs text-emerald-100 font-medium truncate">Ingreso de insumos a bodega</p>
                     </div>
                 </div>
                 <button type="button"
-                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer shrink-0">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
@@ -494,7 +495,7 @@
             </div>
 
             <!-- Formulario -->
-            <form id="formEntrada" class="p-6 space-y-4">
+            <form id="formEntrada" class="p-4 sm:p-6 space-y-4 overflow-y-auto">
 
                 <!-- Bodega de Destino -->
                 <div>
@@ -523,7 +524,7 @@
 
                 <!-- Vista previa de stock actual -->
                 <div id="entradaStockPreview"
-                    class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium flex items-center justify-between">
+                    class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium flex flex-wrap items-center justify-between gap-2">
                     <span>Stock actual en bodega seleccionada: <strong id="entradaCurrentStock"
                             class="text-sm font-bold">0</strong> piezas</span>
                     <span class="text-[11px] text-emerald-600 font-semibold">+ Sumará piezas</span>
@@ -555,14 +556,14 @@
                 </div>
 
                 <!-- Botones de Acción -->
-                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                <div class="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 border-t border-slate-100">
                     <button type="button"
-                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer text-center">
                         Cancelar
                     </button>
                     <button type="submit" id="btnSubmitEntrada"
-                        class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/25 active:scale-95 flex items-center gap-2 cursor-pointer">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-md shadow-emerald-600/25 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         <span>Confirmar Entrada</span>
@@ -578,25 +579,25 @@
     <!-- ========================================== -->
     <div id="modalSalida" class="modal-backdrop">
         <div
-            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+            class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full max-h-[90dvh] flex flex-col shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
 
             <!-- Cabecera del Modal -->
-            <div class="p-6 bg-gradient-to-r from-rose-600 to-red-700 text-white flex items-center justify-between">
-                <div class="flex items-center gap-3">
+            <div class="p-4 sm:p-6 bg-gradient-to-r from-rose-600 to-red-700 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
                     <div
-                        class="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M5 10l7-7m0 0l7 7m-7-7v18" />
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-black tracking-tight">Registrar Salida de Material</h3>
-                        <p class="text-xs text-rose-100 font-medium">Entrega controlada a personal de intendencia</p>
+                    <div class="min-w-0">
+                        <h3 class="text-base sm:text-lg font-black tracking-tight truncate">Registrar Salida de Material</h3>
+                        <p class="text-[11px] sm:text-xs text-rose-100 font-medium truncate">Entrega controlada a personal de intendencia</p>
                     </div>
                 </div>
                 <button type="button"
-                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer shrink-0">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
@@ -605,7 +606,7 @@
             </div>
 
             <!-- Formulario -->
-            <form id="formSalida" class="p-6 space-y-4">
+            <form id="formSalida" class="p-4 sm:p-6 space-y-4 overflow-y-auto">
 
                 <!-- Bodega de Origen -->
                 <div>
@@ -634,7 +635,7 @@
 
                 <!-- Indicador de stock actual disponible en esa bodega -->
                 <div id="salidaStockPreview"
-                    class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 font-medium flex items-center justify-between">
+                    class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 font-medium flex flex-wrap items-center justify-between gap-2">
                     <span>Stock en bodega seleccionada: <strong id="salidaCurrentStock"
                             class="text-sm font-bold">0</strong> piezas</span>
                     <span id="salidaStockWarning" class="text-[11px] font-semibold text-rose-600"></span>
@@ -650,11 +651,11 @@
 
                 <!-- Selector de Intendente (con chips rápidos y selector desplegable) -->
                 <div>
-                    <div class="flex items-center justify-between mb-1.5">
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Intendente
                             Solicitante *</label>
                         <button type="button" id="btnAdminIntendentesDesdeSalida"
-                            class="text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1 cursor-pointer">
+                            class="text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1 cursor-pointer shrink-0">
                             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -665,7 +666,7 @@
 
                     <!-- Chips de los 11 intendentes para clic rápido -->
                     <div id="intendentesChipsContainer"
-                        class="flex flex-wrap gap-1.5 mb-2.5 max-h-32 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-200/60">
+                        class="flex flex-wrap gap-1.5 mb-2.5 max-h-32 overflow-y-auto p-1.5 bg-slate-50 rounded-xl border border-slate-200/60">
                         <!-- Renderizado dinámico de chips de intendentes -->
                     </div>
 
@@ -685,14 +686,14 @@
                 </div>
 
                 <!-- Botones de Acción -->
-                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                <div class="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 border-t border-slate-100">
                     <button type="button"
-                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer text-center">
                         Cancelar
                     </button>
                     <button type="submit" id="btnSubmitSalida"
-                        class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-md shadow-rose-600/25 active:scale-95 flex items-center gap-2 cursor-pointer">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-md shadow-rose-600/25 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         <span>Confirmar Salida</span>
@@ -708,26 +709,26 @@
     <!-- ========================================== -->
     <div id="modalTraspaso" class="modal-backdrop">
         <div
-            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+            class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full max-h-[90dvh] flex flex-col shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
 
             <!-- Cabecera -->
             <div
-                class="p-6 bg-gradient-to-r from-indigo-700 to-purple-800 text-white flex items-center justify-between">
-                <div class="flex items-center gap-3">
+                class="p-4 sm:p-6 bg-gradient-to-r from-indigo-700 to-purple-800 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
                     <div
-                        class="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-black tracking-tight">Traspaso entre Bodegas</h3>
-                        <p class="text-xs text-indigo-100 font-medium">Mover existencias de una bodega a otra</p>
+                    <div class="min-w-0">
+                        <h3 class="text-base sm:text-lg font-black tracking-tight truncate">Traspaso entre Bodegas</h3>
+                        <p class="text-[11px] sm:text-xs text-indigo-100 font-medium truncate">Mover existencias de una bodega a otra</p>
                     </div>
                 </div>
                 <button type="button"
-                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer shrink-0">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
@@ -736,7 +737,7 @@
             </div>
 
             <!-- Formulario -->
-            <form id="formTraspaso" class="p-6 space-y-4">
+            <form id="formTraspaso" class="p-4 sm:p-6 space-y-4 overflow-y-auto">
 
                 <!-- Producto -->
                 <div>
@@ -749,7 +750,7 @@
                 </div>
 
                 <!-- Bodega Origen y Destino -->
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Bodega
                             Origen *</label>
@@ -780,7 +781,7 @@
 
                 <!-- Preview de stock disponible en origen -->
                 <div id="traspasoStockPreview"
-                    class="hidden p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 font-medium flex items-center justify-between">
+                    class="hidden p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 font-medium flex flex-wrap items-center justify-between gap-2">
                     <span>Stock disponible en origen: <strong id="traspasoStockAvailable"
                             class="text-sm font-bold">0</strong> piezas</span>
                     <span class="text-[11px] text-indigo-600 font-semibold">Se moverá a destino</span>
@@ -811,14 +812,14 @@
                 </div>
 
                 <!-- Botones -->
-                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                <div class="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 border-t border-slate-100">
                     <button type="button"
-                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer text-center">
                         Cancelar
                     </button>
                     <button type="submit" id="btnSubmitTraspaso"
-                        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-md shadow-indigo-600/25 active:scale-95 flex items-center gap-2 cursor-pointer">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-md shadow-indigo-600/25 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
@@ -835,24 +836,24 @@
     <!-- ========================================== -->
     <div id="modalProducto" class="modal-backdrop">
         <div
-            class="bg-white rounded-3xl max-w-xl w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+            class="bg-white rounded-2xl sm:rounded-3xl max-w-xl w-full max-h-[90dvh] flex flex-col shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
 
             <!-- Cabecera -->
-            <div class="p-6 bg-slate-900 text-white flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-4 sm:p-6 bg-slate-900 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
-                    <div>
-                        <h3 id="modalProductoTitle" class="text-lg font-black tracking-tight">Agregar Nuevo Producto
+                    <div class="min-w-0">
+                        <h3 id="modalProductoTitle" class="text-base sm:text-lg font-black tracking-tight truncate">Agregar Nuevo Producto
                         </h3>
-                        <p class="text-xs text-slate-300 font-medium">Registro exclusivo en la bodega seleccionada</p>
+                        <p class="text-[11px] sm:text-xs text-slate-300 font-medium truncate">Registro exclusivo en la bodega seleccionada</p>
                     </div>
                 </div>
                 <button type="button"
-                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer shrink-0">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
@@ -861,7 +862,7 @@
             </div>
 
             <!-- Formulario -->
-            <form id="formProducto" class="p-6 space-y-4">
+            <form id="formProducto" class="p-4 sm:p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" id="prodEditMode" value="false">
 
                 <!-- Código -->
@@ -900,7 +901,7 @@
                 </div>
 
                 <!-- Bodega Exclusiva y Existencias -->
-                <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3">
+                <div class="p-3.5 sm:p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
                             Bodega de Registro (Exclusiva) *
@@ -920,7 +921,7 @@
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                                 Existencia Inicial (Piezas) *
@@ -939,13 +940,13 @@
                 </div>
 
                 <!-- Botones de Acción -->
-                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                <div class="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 border-t border-slate-100">
                     <button type="button"
-                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+                        class="btnCerrarModal px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer text-center">
                         Cancelar
                     </button>
                     <button type="submit" id="btnSubmitProducto"
-                        class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center gap-2 cursor-pointer">
+                        class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                         <span>Guardar Producto</span>
                     </button>
                 </div>
@@ -959,24 +960,24 @@
     <!-- ========================================== -->
     <div id="modalConfig" class="modal-backdrop">
         <div
-            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+            class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full max-h-[90dvh] flex flex-col shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
 
             <!-- Cabecera -->
-            <div class="p-6 bg-slate-900 text-white flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-4 sm:p-6 bg-slate-900 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-black tracking-tight">Configuración de Google Sheets</h3>
-                        <p class="text-xs text-slate-300 font-medium">Vinculación con Google Apps Script (6 Bodegas)</p>
+                    <div class="min-w-0">
+                        <h3 class="text-base sm:text-lg font-black tracking-tight truncate">Configuración de Google Sheets</h3>
+                        <p class="text-[11px] sm:text-xs text-slate-300 font-medium truncate">Vinculación con Google Apps Script (6 Bodegas)</p>
                     </div>
                 </div>
                 <button type="button"
-                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer shrink-0">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
@@ -985,7 +986,7 @@
             </div>
 
             <!-- Formulario de Configuración -->
-            <form id="formConfig" class="p-6 space-y-4">
+            <form id="formConfig" class="p-4 sm:p-6 space-y-4 overflow-y-auto">
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">URL de la
@@ -1011,17 +1012,17 @@
                 </div>
 
                 <!-- Botones -->
-                <div class="pt-3 flex gap-3 border-t border-slate-100">
+                <div class="pt-3 flex flex-col sm:flex-row gap-2 sm:gap-3 border-t border-slate-100">
                     <button type="button" id="btnProbarConfig"
-                        class="w-1/2 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="w-full sm:w-1/2 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                        <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                         <span>Probar Conexión</span>
                     </button>
                     <button type="submit"
-                        class="w-1/2 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-md shadow-blue-500/25 cursor-pointer flex items-center justify-center gap-1.5">
+                        class="w-full sm:w-1/2 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-md shadow-blue-500/25 cursor-pointer flex items-center justify-center gap-1.5">
                         <span>Guardar y Sincronizar</span>
                     </button>
                 </div>
@@ -1035,24 +1036,24 @@
     <!-- ========================================== -->
     <div id="modalIntendentes" class="modal-backdrop">
         <div
-            class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
+            class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full max-h-[90dvh] flex flex-col shadow-2xl border border-slate-200/80 overflow-hidden modal-content-animated">
 
             <!-- Cabecera -->
-            <div class="p-6 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="p-4 sm:p-6 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-black tracking-tight">Personal de Intendencia</h3>
-                        <p class="text-xs text-slate-300 font-medium">Agregar o dar de baja personal autorizado</p>
+                    <div class="min-w-0">
+                        <h3 class="text-base sm:text-lg font-black tracking-tight truncate">Personal de Intendencia</h3>
+                        <p class="text-[11px] sm:text-xs text-slate-300 font-medium truncate">Agregar o dar de baja personal autorizado</p>
                     </div>
                 </div>
                 <button type="button"
-                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer">
+                    class="btnCerrarModal text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all cursor-pointer shrink-0">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
@@ -1061,20 +1062,20 @@
             </div>
 
             <!-- Cuerpo del modal -->
-            <div class="p-6 space-y-5">
+            <div class="p-4 sm:p-6 space-y-5 overflow-y-auto">
 
                 <!-- Formulario para Agregar Intendente -->
                 <form id="formAgregarIntendente" class="space-y-2">
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                         Nuevo Intendente *
                     </label>
-                    <div class="flex gap-2">
+                    <div class="flex flex-col xs:flex-row sm:flex-row gap-2">
                         <input type="text" id="inputNuevoIntendente" required
                             placeholder="Nombre del intendente (Ej. Juan Pérez)"
                             class="flex-1 py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500">
                         <button type="submit"
-                            class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-md shadow-rose-600/20 active:scale-95 cursor-pointer whitespace-nowrap flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-md shadow-rose-600/20 active:scale-95 cursor-pointer whitespace-nowrap flex items-center justify-center gap-1.5">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4v16m8-8H4" />
                             </svg>
@@ -1094,7 +1095,7 @@
                             personas</span>
                     </div>
 
-                    <div id="listaIntendentesAdmin" class="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+                    <div id="listaIntendentesAdmin" class="space-y-1.5 max-h-52 sm:max-h-60 overflow-y-auto pr-1">
                         <!-- Renderizado dinámico vía app.js -->
                     </div>
                 </div>
@@ -1102,7 +1103,7 @@
                 <!-- Botón de Cerrar -->
                 <div class="pt-3 border-t border-slate-100 flex justify-end">
                     <button type="button"
-                        class="btnCerrarModal px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all cursor-pointer">
+                        class="btnCerrarModal w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all cursor-pointer text-center">
                         Listo / Cerrar
                     </button>
                 </div>
@@ -1116,7 +1117,7 @@
     <!-- ========================================== -->
     <div id="modalEliminar" class="modal-backdrop">
         <div
-            class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-slate-200/80 p-6 text-center space-y-4 modal-content-animated">
+            class="bg-white rounded-2xl sm:rounded-3xl max-w-sm w-full shadow-2xl border border-slate-200/80 p-5 sm:p-6 text-center space-y-4 modal-content-animated">
             <div class="h-14 w-14 mx-auto rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
