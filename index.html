@@ -411,8 +411,8 @@
 
             <!-- Filtros de la Bitácora -->
             <div
-                class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
-                <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+                class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
+                <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
                     <button id="filterMovAll"
                         class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white cursor-pointer whitespace-nowrap">Todos</button>
                     <button id="filterMovEntradas"
@@ -425,7 +425,32 @@
                         class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer whitespace-nowrap">Solo
                         Traspasos</button>
                 </div>
-                <p class="text-xs text-slate-500 font-medium hidden sm:block">Bitácora en tiempo real sincronizada</p>
+
+                <!-- Filtro por Mes y Contador de Resultados -->
+                <div class="flex items-center justify-between sm:justify-end gap-2.5">
+                    <div class="relative flex-1 sm:flex-none">
+                        <select id="filterMovMes"
+                            class="w-full sm:w-auto py-2 px-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 cursor-pointer">
+                            <option value="ALL">📅 Todos los meses</option>
+                            <option value="01">Enero</option>
+                            <option value="02">Febrero</option>
+                            <option value="03">Marzo</option>
+                            <option value="04">Abril</option>
+                            <option value="05">Mayo</option>
+                            <option value="06">Junio</option>
+                            <option value="07">Julio</option>
+                            <option value="08">Agosto</option>
+                            <option value="09">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                    </div>
+                    <span id="contadorMovimientosBitacora"
+                        class="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-[11px] font-extrabold whitespace-nowrap">
+                        0 registros
+                    </span>
+                </div>
             </div>
 
             <!-- Tabla de Movimientos -->
