@@ -925,19 +925,77 @@ function renderizarTablaProductos() {
 }
 
 /**
- * Renderiza el historial de movimientos
+ * Extrae el número de mes ("01" a "12") a partir de cualquier formato de fecha
+ */
+function extraerMesDeFecha(fechaRaw) {
+  if (!fechaRaw) return "";
+  const str = String(fechaRaw).trim();
+
+  // Formato YYYY-MM-DD o YYYY/MM/DD
+  const matchIso = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if (matchIso) {
+    return matchIso[2].padStart(2, '0');
+  }
+
+  // Formato DD/MM/YYYY o DD-MM-YYYY
+  const matchLatam = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+  if (matchLatam) {
+    return matchLatam[2].padStart(2, '0');
+  }
+
+  // Fallback para cadenas Date de JS (ej. "Mon Nov 09 2026...")
+  const parsed = new Date(str);
+  if (!isNaN(parsed.getTime())) {
+    return String(parsed.getMonth() + 1).padStart(2, '0');
+  }
+
+  return "";
+}
+
+/**
+ * Normaliza la fecha para mostrarla limpia en la tabla (YYYY-MM-DD)
+ */
+function formatearFechaLegible(fechaRaw) {
+  if (!fechaRaw) return "";
+  const str = String(fechaRaw).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+
+  const parsed = new Date(str);
+  if (!isNaN(parsed.getTime()) && str.length > 10) {
+    const yyyy = parsed.getFullYear();
+    const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+    const dd = String(parsed.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return str;
+}
+
+/**
+ * Renderiza el historial de movimientos con filtro por tipo y por mes
  */
 function renderizarTablaMovimientos() {
   const tbody = document.getElementById('tablaMovimientosBody');
   const noMovs = document.getElementById('noMovements');
+  const contadorElem = document.getElementById('contadorMovimientosBitacora');
+  const filtroMes = document.getElementById('filterMovMes')?.value || 'ALL';
   if (!tbody) return;
 
   const filtrados = historialMovimientos.filter(m => {
     if (filtroMovTipo === 'ENTRADA' && m.tipo !== 'ENTRADA') return false;
     if (filtroMovTipo === 'SALIDA' && m.tipo !== 'SALIDA') return false;
     if (filtroMovTipo === 'TRASPASO' && m.tipo !== 'TRASPASO') return false;
+
+    if (filtroMes !== 'ALL') {
+      const mesMov = extraerMesDeFecha(m.fecha);
+      if (mesMov !== filtroMes) return false;
+    }
+
     return true;
   });
+
+  if (contadorElem) {
+    contadorElem.textContent = `${filtrados.length} ${filtrados.length === 1 ? 'registro' : 'registros'}`;
+  }
 
   tbody.innerHTML = '';
 
@@ -970,9 +1028,11 @@ function renderizarTablaMovimientos() {
       cantidadClass = 'text-indigo-700 font-black';
     }
 
+    const fechaLimpia = formatearFechaLegible(mov.fecha);
+
     tr.innerHTML = `
       <td data-label="Fecha y Hora" class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
-        <div class="font-bold text-slate-800 text-xs">${escapeHtml(mov.fecha || '')}</div>
+        <div class="font-bold text-slate-800 text-xs">${escapeHtml(fechaLimpia)}</div>
         <div class="text-[11px] text-slate-400 font-mono">${escapeHtml(mov.hora || '')}</div>
       </td>
       <td data-label="Tipo" class="py-3.5 px-4 text-center whitespace-nowrap">
@@ -1501,6 +1561,7 @@ function configurarEventListeners() {
   document.getElementById('filterMovEntradas')?.addEventListener('click', () => setFiltroMov('ENTRADA'));
   document.getElementById('filterMovSalidas')?.addEventListener('click', () => setFiltroMov('SALIDA'));
   document.getElementById('filterMovTraspasos')?.addEventListener('click', () => setFiltroMov('TRASPASO'));
+  document.getElementById('filterMovMes')?.addEventListener('change', renderizarTablaMovimientos);
 
   // Sincronizar
   document.getElementById('btnSync')?.addEventListener('click', () => sincronizarConGoogleSheets(true));
