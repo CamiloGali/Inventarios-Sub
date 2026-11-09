@@ -394,12 +394,44 @@ async function procesarEntradaForm(e) {
 }
 
 /**
- * Registra una salida desde una bodega específica
+ * Obtiene la clave e identificador de la bodega donde el producto tiene su stock
+ */
+function obtenerBodegaActivaDeProducto(prod) {
+  if (!prod) return BODEGAS.B3;
+  // 1. Si hay filtro de bodega activo y tiene stock ahí
+  if (bodegaFiltroActivo !== 'ALL' && BODEGAS[bodegaFiltroActivo]) {
+    const kFiltro = BODEGAS[bodegaFiltroActivo].key;
+    if (prod.bodegas && (prod.bodegas[kFiltro] || 0) > 0) {
+      return BODEGAS[bodegaFiltroActivo];
+    }
+  }
+  // 2. Bodega asignada al producto si tiene stock
+  if (prod.bodegaId && BODEGAS[prod.bodegaId]) {
+    const kAsig = BODEGAS[prod.bodegaId].key;
+    if (prod.bodegas && (prod.bodegas[kAsig] || 0) > 0) {
+      return BODEGAS[prod.bodegaId];
+    }
+  }
+  // 3. Cualquier bodega que tenga el mayor stock disponible
+  let mejorBodega = BODEGAS[prod.bodegaId] || BODEGAS.B3;
+  let maxStock = -1;
+  for (const id in BODEGAS) {
+    const b = BODEGAS[id];
+    const s = (prod.bodegas && prod.bodegas[b.key]) ? Number(prod.bodegas[b.key]) : 0;
+    if (s > maxStock) {
+      maxStock = s;
+      mejorBodega = b;
+    }
+  }
+  return mejorBodega;
+}
+
+/**
+ * Registra una salida de material (sin mostrar ni guardar la bodega en Salidas)
  */
 async function procesarSalidaForm(e) {
   e.preventDefault();
 
-  const bodegaId = document.getElementById('salidaBodegaSelect').value || 'B3';
   const codigo = document.getElementById('salidaProductoSelect').value;
   const cantidad = parseInt(document.getElementById('salidaCantidad').value, 10);
   const intendente = document.getElementById('salidaIntendenteSelect').value;
@@ -412,17 +444,21 @@ async function procesarSalidaForm(e) {
   const prod = catalogoProductos.find(p => p.codigo === codigo);
   if (!prod) return mostrarToast("Producto no encontrado en catálogo.", "error");
 
-  const bodegaInfo = BODEGAS[bodegaId] || BODEGAS.B3;
+  const bodegaInfo = obtenerBodegaActivaDeProducto(prod);
   const key = bodegaInfo.key;
-  const stockEnBodega = (prod.bodegas && prod.bodegas[key]) ? prod.bodegas[key] : 0;
+  const stockDisponible = (prod.bodegas && prod.bodegas[key]) ? prod.bodegas[key] : (prod.stock || 0);
 
-  if (stockEnBodega < cantidad) {
-    return mostrarToast(`Stock insuficiente en ${bodegaInfo.corto}. Solo hay ${stockEnBodega} pieza(s).`, "error");
+  if (stockDisponible < cantidad) {
+    return mostrarToast(`Stock insuficiente. Solo hay ${stockDisponible} pieza(s) disponible(s).`, "error");
   }
 
   // 1. Actualización optimista local
-  prod.bodegas[key] -= cantidad;
-  prod.stock = Object.values(prod.bodegas).reduce((acc, v) => acc + (Number(v) || 0), 0);
+  if (prod.bodegas && prod.bodegas[key] !== undefined) {
+    prod.bodegas[key] = Math.max(0, prod.bodegas[key] - cantidad);
+    prod.stock = Object.values(prod.bodegas).reduce((acc, v) => acc + (Number(v) || 0), 0);
+  } else {
+    prod.stock = Math.max(0, (prod.stock || 0) - cantidad);
+  }
   prod.ultimaActualizacion = new Date().toLocaleString();
 
   const now = new Date();
@@ -435,7 +471,7 @@ async function procesarSalidaForm(e) {
     tipo: "SALIDA",
     fecha: fechaStr,
     hora: horaStr,
-    bodega: bodegaInfo.nombre,
+    bodega: "—",
     codigo: prod.codigo,
     descripcion: prod.descripcion,
     cantidad: cantidad,
@@ -447,12 +483,12 @@ async function procesarSalidaForm(e) {
   actualizarUICompleta();
   cerrarTodosLosModales();
   document.getElementById('formSalida').reset();
-  mostrarToast(`-${cantidad} piezas retiradas de ${bodegaInfo.corto} para ${intendente}`, "success");
+  mostrarToast(`-${cantidad} piezas entregadas a ${intendente}`, "success");
 
-  // 2. Enviar a Google Sheets
+  // 2. Enviar a Google Sheets (sin mostrar bodega en la hoja Salidas)
   enviarPeticionAppsScript({
     action: "registrarSalida",
-    bodega: bodegaId,
+    bodega: bodegaInfo.id,
     codigo: prod.codigo,
     descripcion: prod.descripcion,
     cantidad: cantidad,
@@ -993,14 +1029,19 @@ function poblarSelectsDeProductos() {
   const selectSal = document.getElementById('salidaProductoSelect');
   const selectTra = document.getElementById('traspasoProductoSelect');
 
-  const optionsHtml = ['<option value="" disabled selected>Selecciona un producto...</option>']
+  const optionsConBodegaHtml = ['<option value="" disabled selected>Selecciona un producto...</option>']
     .concat(catalogoProductos.map(p =>
       `<option value="${escapeHtml(p.codigo)}">[${escapeHtml(p.codigo)}] ${escapeHtml(p.descripcion)} (${BODEGAS[p.bodegaId]?.corto || 'B3'} | Stock: ${p.stock || 0})</option>`
     )).join('');
 
-  if (selectEnt) selectEnt.innerHTML = optionsHtml;
-  if (selectSal) selectSal.innerHTML = optionsHtml;
-  if (selectTra) selectTra.innerHTML = optionsHtml;
+  const optionsSinBodegaHtml = ['<option value="" disabled selected>Selecciona un producto...</option>']
+    .concat(catalogoProductos.map(p =>
+      `<option value="${escapeHtml(p.codigo)}">[${escapeHtml(p.codigo)}] ${escapeHtml(p.descripcion)} (Stock: ${p.stock || 0})</option>`
+    )).join('');
+
+  if (selectEnt) selectEnt.innerHTML = optionsConBodegaHtml;
+  if (selectSal) selectSal.innerHTML = optionsSinBodegaHtml;
+  if (selectTra) selectTra.innerHTML = optionsConBodegaHtml;
 }
 
 function renderizarIntendentes() {
@@ -1198,8 +1239,6 @@ window.abrirEntradaConProducto = function (codigo) {
 window.abrirSalidaConProducto = function (codigo) {
   abrirModal('modalSalida');
   const select = document.getElementById('salidaProductoSelect');
-  const bSelect = document.getElementById('salidaBodegaSelect');
-  if (bSelect && bodegaFiltroActivo !== 'ALL') bSelect.value = bodegaFiltroActivo;
   if (select) {
     select.value = codigo;
     actualizarPreviewSalida();
@@ -1280,7 +1319,6 @@ function actualizarPreviewEntrada() {
 
 function actualizarPreviewSalida() {
   const cod = document.getElementById('salidaProductoSelect')?.value;
-  const bId = document.getElementById('salidaBodegaSelect')?.value || 'B3';
   const preview = document.getElementById('salidaStockPreview');
   const currElem = document.getElementById('salidaCurrentStock');
   const warnElem = document.getElementById('salidaStockWarning');
@@ -1289,17 +1327,19 @@ function actualizarPreviewSalida() {
   if (!cod || !preview || !currElem) return;
   const prod = catalogoProductos.find(p => p.codigo === cod);
   if (prod) {
-    const key = BODEGAS[bId].key;
-    const stockBodega = (prod.bodegas && prod.bodegas[key]) ? prod.bodegas[key] : 0;
-    currElem.textContent = stockBodega;
+    const bInfo = obtenerBodegaActivaDeProducto(prod);
+    const stockDisponible = (prod.bodegas && prod.bodegas[bInfo.key] !== undefined)
+      ? prod.bodegas[bInfo.key]
+      : (prod.stock || 0);
+    currElem.textContent = stockDisponible;
     preview.classList.remove('hidden');
-    cantInput.max = stockBodega;
+    cantInput.max = stockDisponible;
 
-    if (stockBodega === 0) {
-      warnElem.textContent = "⚠️ ¡Agotado en esta bodega!";
+    if (stockDisponible === 0) {
+      warnElem.textContent = "⚠️ ¡Producto agotado!";
       warnElem.className = "text-[11px] font-bold text-rose-600";
     } else {
-      warnElem.textContent = "Disponible en esta bodega";
+      warnElem.textContent = "Disponible para entrega";
       warnElem.className = "text-[11px] font-semibold text-emerald-600";
     }
   }
@@ -1369,9 +1409,6 @@ function configurarEventListeners() {
     document.getElementById('formSalida')?.reset();
     document.getElementById('salidaStockPreview')?.classList.add('hidden');
     document.querySelectorAll('.intendente-chip').forEach(c => c.classList.remove('selected'));
-    if (bodegaFiltroActivo !== 'ALL') {
-      document.getElementById('salidaBodegaSelect').value = bodegaFiltroActivo;
-    }
     abrirModal('modalSalida');
   });
 
@@ -1450,7 +1487,6 @@ function configurarEventListeners() {
   document.getElementById('entradaBodegaSelect')?.addEventListener('change', actualizarPreviewEntrada);
 
   document.getElementById('salidaProductoSelect')?.addEventListener('change', actualizarPreviewSalida);
-  document.getElementById('salidaBodegaSelect')?.addEventListener('change', actualizarPreviewSalida);
 
   document.getElementById('traspasoProductoSelect')?.addEventListener('change', actualizarPreviewTraspaso);
   document.getElementById('traspasoOrigenSelect')?.addEventListener('change', actualizarPreviewTraspaso);
