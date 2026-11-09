@@ -633,6 +633,21 @@
             <!-- Formulario -->
             <form id="formSalida" class="p-4 sm:p-6 space-y-4 overflow-y-auto">
 
+                <!-- Bodega de Origen -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Bodega de
+                        Origen (Retiro) *</label>
+                    <select id="salidaBodegaSelect" required
+                        class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/30 focus:border-rose-500 bg-white">
+                        <option value="B3">Bodega 3 - Mantenimiento</option>
+                        <option value="B4">Bodega 4 - Electrónica</option>
+                        <option value="B5">Bodega 5 - LOMA</option>
+                        <option value="B6">Bodega 6 - Equipos de audio</option>
+                        <option value="B7">Bodega 7 - Pinturas y electricidad</option>
+                        <option value="B8">Bodega 8 - Jardinería</option>
+                    </select>
+                </div>
+
                 <!-- Seleccionar Producto -->
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Producto a
@@ -643,10 +658,10 @@
                     </select>
                 </div>
 
-                <!-- Indicador de stock actual disponible -->
+                <!-- Indicador de stock actual disponible en esa bodega -->
                 <div id="salidaStockPreview"
                     class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 font-medium flex flex-wrap items-center justify-between gap-2">
-                    <span>Stock disponible: <strong id="salidaCurrentStock"
+                    <span>Stock en bodega seleccionada: <strong id="salidaCurrentStock"
                             class="text-sm font-bold">0</strong> piezas</span>
                     <span id="salidaStockWarning" class="text-[11px] font-semibold text-rose-600"></span>
                 </div>
