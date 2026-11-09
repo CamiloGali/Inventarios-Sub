@@ -427,7 +427,9 @@ function obtenerBodegaActivaDeProducto(prod) {
 }
 
 /**
- * Registra una salida de material (sin mostrar ni guardar la bodega en Salidas)
+ * Registra una salida desde la bodega correspondiente:
+ * - En index.html (Bitácora) sí muestra la bodega de donde sale el material.
+ * - En Google Sheets (hoja Salidas) guarda solo las 8 columnas sin recorrer datos.
  */
 async function procesarSalidaForm(e) {
   e.preventDefault();
@@ -444,12 +446,15 @@ async function procesarSalidaForm(e) {
   const prod = catalogoProductos.find(p => p.codigo === codigo);
   if (!prod) return mostrarToast("Producto no encontrado en catálogo.", "error");
 
-  const bodegaInfo = obtenerBodegaActivaDeProducto(prod);
+  const selectBodegaVal = document.getElementById('salidaBodegaSelect')?.value;
+  const bodegaInfo = (selectBodegaVal && BODEGAS[selectBodegaVal])
+    ? BODEGAS[selectBodegaVal]
+    : obtenerBodegaActivaDeProducto(prod);
   const key = bodegaInfo.key;
-  const stockDisponible = (prod.bodegas && prod.bodegas[key]) ? prod.bodegas[key] : (prod.stock || 0);
+  const stockDisponible = (prod.bodegas && prod.bodegas[key] !== undefined) ? prod.bodegas[key] : (prod.stock || 0);
 
   if (stockDisponible < cantidad) {
-    return mostrarToast(`Stock insuficiente. Solo hay ${stockDisponible} pieza(s) disponible(s).`, "error");
+    return mostrarToast(`Stock insuficiente en ${bodegaInfo.corto}. Solo hay ${stockDisponible} pieza(s) disponible(s).`, "error");
   }
 
   // 1. Actualización optimista local
@@ -471,7 +476,7 @@ async function procesarSalidaForm(e) {
     tipo: "SALIDA",
     fecha: fechaStr,
     hora: horaStr,
-    bodega: "—",
+    bodega: bodegaInfo.nombre,
     codigo: prod.codigo,
     descripcion: prod.descripcion,
     cantidad: cantidad,
@@ -483,9 +488,9 @@ async function procesarSalidaForm(e) {
   actualizarUICompleta();
   cerrarTodosLosModales();
   document.getElementById('formSalida').reset();
-  mostrarToast(`-${cantidad} piezas entregadas a ${intendente}`, "success");
+  mostrarToast(`-${cantidad} piezas retiradas de ${bodegaInfo.corto} para ${intendente}`, "success");
 
-  // 2. Enviar a Google Sheets (sin mostrar bodega en la hoja Salidas)
+  // 2. Enviar a Google Sheets
   enviarPeticionAppsScript({
     action: "registrarSalida",
     bodega: bodegaInfo.id,
@@ -971,6 +976,45 @@ function formatearFechaLegible(fechaRaw) {
 }
 
 /**
+ * Normaliza la hora para mostrarla limpia (HH:mm:ss), incluso si viene de Sheets como Date 1899
+ */
+function formatearHoraLegible(horaRaw) {
+  if (!horaRaw) return "";
+  const str = String(horaRaw).trim();
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(str)) return str;
+
+  const matchTime = str.match(/(\d{2}:\d{2}:\d{2})/);
+  if (matchTime) return matchTime[1];
+
+  const parsed = new Date(str);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toTimeString().slice(0, 8);
+  }
+  return str;
+}
+
+/**
+ * Resuelve el nombre de la bodega de un movimiento en caso de que la hoja de Google Sheets
+ * no tenga columna de bodega (buscando la bodega asignada al producto por su código).
+ */
+function resolverBodegaDeMovimiento(mov) {
+  const bActual = String(mov.bodega || "").trim();
+  if (bActual && bActual !== "—" && bActual !== "-") {
+    return bActual;
+  }
+  if (mov.codigo) {
+    const prod = catalogoProductos.find(
+      p => String(p.codigo).trim().toUpperCase() === String(mov.codigo).trim().toUpperCase()
+    );
+    if (prod) {
+      const bInfo = obtenerBodegaActivaDeProducto(prod);
+      if (bInfo) return bInfo.nombre;
+    }
+  }
+  return "Bodega 3 - Mantenimiento";
+}
+
+/**
  * Renderiza el historial de movimientos con filtro por tipo y por mes
  */
 function renderizarTablaMovimientos() {
@@ -1029,18 +1073,20 @@ function renderizarTablaMovimientos() {
     }
 
     const fechaLimpia = formatearFechaLegible(mov.fecha);
+    const horaLimpia = formatearHoraLegible(mov.hora);
+    const bodegaMostrada = resolverBodegaDeMovimiento(mov);
 
     tr.innerHTML = `
       <td data-label="Fecha y Hora" class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
         <div class="font-bold text-slate-800 text-xs">${escapeHtml(fechaLimpia)}</div>
-        <div class="text-[11px] text-slate-400 font-mono">${escapeHtml(mov.hora || '')}</div>
+        <div class="text-[11px] text-slate-400 font-mono">${escapeHtml(horaLimpia)}</div>
       </td>
       <td data-label="Tipo" class="py-3.5 px-4 text-center whitespace-nowrap">
         ${tipoBadge}
       </td>
       <td data-label="Bodega" class="py-3.5 px-4 whitespace-nowrap">
         <span class="inline-block px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
-          ${escapeHtml(mov.bodega || 'B3')}
+          ${escapeHtml(bodegaMostrada)}
         </span>
       </td>
       <td data-label="Código" class="py-3.5 px-4 whitespace-nowrap min-w-[130px]">
@@ -1089,19 +1135,14 @@ function poblarSelectsDeProductos() {
   const selectSal = document.getElementById('salidaProductoSelect');
   const selectTra = document.getElementById('traspasoProductoSelect');
 
-  const optionsConBodegaHtml = ['<option value="" disabled selected>Selecciona un producto...</option>']
+  const optionsHtml = ['<option value="" disabled selected>Selecciona un producto...</option>']
     .concat(catalogoProductos.map(p =>
       `<option value="${escapeHtml(p.codigo)}">[${escapeHtml(p.codigo)}] ${escapeHtml(p.descripcion)} (${BODEGAS[p.bodegaId]?.corto || 'B3'} | Stock: ${p.stock || 0})</option>`
     )).join('');
 
-  const optionsSinBodegaHtml = ['<option value="" disabled selected>Selecciona un producto...</option>']
-    .concat(catalogoProductos.map(p =>
-      `<option value="${escapeHtml(p.codigo)}">[${escapeHtml(p.codigo)}] ${escapeHtml(p.descripcion)} (Stock: ${p.stock || 0})</option>`
-    )).join('');
-
-  if (selectEnt) selectEnt.innerHTML = optionsConBodegaHtml;
-  if (selectSal) selectSal.innerHTML = optionsSinBodegaHtml;
-  if (selectTra) selectTra.innerHTML = optionsConBodegaHtml;
+  if (selectEnt) selectEnt.innerHTML = optionsHtml;
+  if (selectSal) selectSal.innerHTML = optionsHtml;
+  if (selectTra) selectTra.innerHTML = optionsHtml;
 }
 
 function renderizarIntendentes() {
@@ -1299,6 +1340,15 @@ window.abrirEntradaConProducto = function (codigo) {
 window.abrirSalidaConProducto = function (codigo) {
   abrirModal('modalSalida');
   const select = document.getElementById('salidaProductoSelect');
+  const bSelect = document.getElementById('salidaBodegaSelect');
+  const prod = catalogoProductos.find(p => p.codigo === codigo);
+  if (bSelect) {
+    if (bodegaFiltroActivo !== 'ALL') {
+      bSelect.value = bodegaFiltroActivo;
+    } else if (prod) {
+      bSelect.value = obtenerBodegaActivaDeProducto(prod).id;
+    }
+  }
   if (select) {
     select.value = codigo;
     actualizarPreviewSalida();
@@ -1377,8 +1427,9 @@ function actualizarPreviewEntrada() {
   }
 }
 
-function actualizarPreviewSalida() {
+function actualizarPreviewSalida(autoSeleccionarBodega = false) {
   const cod = document.getElementById('salidaProductoSelect')?.value;
+  const bSelect = document.getElementById('salidaBodegaSelect');
   const preview = document.getElementById('salidaStockPreview');
   const currElem = document.getElementById('salidaCurrentStock');
   const warnElem = document.getElementById('salidaStockWarning');
@@ -1387,19 +1438,21 @@ function actualizarPreviewSalida() {
   if (!cod || !preview || !currElem) return;
   const prod = catalogoProductos.find(p => p.codigo === cod);
   if (prod) {
-    const bInfo = obtenerBodegaActivaDeProducto(prod);
-    const stockDisponible = (prod.bodegas && prod.bodegas[bInfo.key] !== undefined)
-      ? prod.bodegas[bInfo.key]
-      : (prod.stock || 0);
-    currElem.textContent = stockDisponible;
+    if (autoSeleccionarBodega && bSelect && bodegaFiltroActivo === 'ALL') {
+      bSelect.value = obtenerBodegaActivaDeProducto(prod).id;
+    }
+    const bId = bSelect?.value || obtenerBodegaActivaDeProducto(prod).id;
+    const key = BODEGAS[bId]?.key || 'bodega3';
+    const stockBodega = (prod.bodegas && prod.bodegas[key] !== undefined) ? prod.bodegas[key] : (prod.stock || 0);
+    currElem.textContent = stockBodega;
     preview.classList.remove('hidden');
-    cantInput.max = stockDisponible;
+    cantInput.max = stockBodega;
 
-    if (stockDisponible === 0) {
-      warnElem.textContent = "⚠️ ¡Producto agotado!";
+    if (stockBodega === 0) {
+      warnElem.textContent = "⚠️ ¡Agotado en esta bodega!";
       warnElem.className = "text-[11px] font-bold text-rose-600";
     } else {
-      warnElem.textContent = "Disponible para entrega";
+      warnElem.textContent = "Disponible en esta bodega";
       warnElem.className = "text-[11px] font-semibold text-emerald-600";
     }
   }
@@ -1469,6 +1522,10 @@ function configurarEventListeners() {
     document.getElementById('formSalida')?.reset();
     document.getElementById('salidaStockPreview')?.classList.add('hidden');
     document.querySelectorAll('.intendente-chip').forEach(c => c.classList.remove('selected'));
+    if (bodegaFiltroActivo !== 'ALL') {
+      const bSelect = document.getElementById('salidaBodegaSelect');
+      if (bSelect) bSelect.value = bodegaFiltroActivo;
+    }
     abrirModal('modalSalida');
   });
 
@@ -1546,7 +1603,8 @@ function configurarEventListeners() {
   document.getElementById('entradaProductoSelect')?.addEventListener('change', actualizarPreviewEntrada);
   document.getElementById('entradaBodegaSelect')?.addEventListener('change', actualizarPreviewEntrada);
 
-  document.getElementById('salidaProductoSelect')?.addEventListener('change', actualizarPreviewSalida);
+  document.getElementById('salidaProductoSelect')?.addEventListener('change', () => actualizarPreviewSalida(true));
+  document.getElementById('salidaBodegaSelect')?.addEventListener('change', () => actualizarPreviewSalida(false));
 
   document.getElementById('traspasoProductoSelect')?.addEventListener('change', actualizarPreviewTraspaso);
   document.getElementById('traspasoOrigenSelect')?.addEventListener('change', actualizarPreviewTraspaso);
